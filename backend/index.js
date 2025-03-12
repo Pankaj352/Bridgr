@@ -11,6 +11,8 @@ import path from "path";
 
 dotenv.config();
 
+console.log("MONGO_URI:", process.env.MONGO_URI);
+
 const PORT = process.env.PORT || 3000;
 
 const __dirname = path.resolve();
