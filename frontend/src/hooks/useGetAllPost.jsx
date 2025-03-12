@@ -10,7 +10,7 @@ const useGetAllPost = () => {
         const fetchAllPost = async () => {
             try {
                 const res = await axios.get(
-                  "https://localhost:8000/api/post/all",
+                  "https://bridgr.onrender.com/api/post/all",
                   { withCredentials: true }
                 );
                 if (res.data.success) { 

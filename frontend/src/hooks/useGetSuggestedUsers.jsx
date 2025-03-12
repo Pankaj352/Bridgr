@@ -10,7 +10,7 @@ const useGetSuggestedUsers = () => {
         const fetchSuggestedUsers = async () => {
             try {
                 const res = await axios.get(
-                  "https://localhost:8000/api/user/suggested",
+                  "https://bridgr.onrender.com/api/user/suggested",
                   { withCredentials: true }
                 );
                 if (res.data.success) { 

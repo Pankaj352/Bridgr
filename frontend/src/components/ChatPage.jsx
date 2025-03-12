@@ -20,7 +20,7 @@ const ChatPage = () => {
   const sendMessageHandler = async (receiverId) => {
     try {
       const res = await axios.post(
-        `https://localhost:8000/api/message/send/${receiverId}`,
+        `https://bridgr.onrender.com/api/message/send/${receiverId}`,
         { textMessage },
         {
           headers: {

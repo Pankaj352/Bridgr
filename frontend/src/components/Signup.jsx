@@ -26,7 +26,7 @@ const Signup = () => {
         try {
             setLoading(true);
             const res = await axios.post(
-              "https://localhost:8000/api/user/register",
+              "https://bridgr.onrender.com/api/user/register",
               input,
               {
                 headers: {

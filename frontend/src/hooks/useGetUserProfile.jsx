@@ -11,7 +11,7 @@ const useGetUserProfile = (userId) => {
         const fetchUserProfile = async () => {
             try {
                 const res = await axios.get(
-                  `https://localhost:8000/api/user/${userId}/profile`,
+                  `https://bridgr.onrender.com/api/user/${userId}/profile`,
                   { withCredentials: true }
                 );
                 if (res.data.success) { 

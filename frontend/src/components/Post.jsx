@@ -34,7 +34,7 @@ const Post = ({ post }) => {
         try {
             const action = liked ? 'dislike' : 'like';
             const res = await axios.get(
-              `https://localhost:8000/api/post/${post._id}/${action}`,
+              `https://bridgr.onrender.com/api/post/${post._id}/${action}`,
               { withCredentials: true }
             );
             console.log(res.data);

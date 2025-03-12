@@ -43,7 +43,7 @@ const EditProfile = () => {
         try {
             setLoading(true);
             const res = await axios.post(
-              "https://localhost:8000/api/user/profile/edit",
+              "https://bridgr.onrender.com/api/user/profile/edit",
               formData,
               {
                 headers: {

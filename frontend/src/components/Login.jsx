@@ -26,12 +26,16 @@ const Login = () => {
         e.preventDefault();
         try {
             setLoading(true);
-            const res = await axios.post('https://localhost:8000/api/user/login', input, {
+            const res = await axios.post(
+              "https://bridgr.onrender.com/api/user/login",
+              input,
+              {
                 headers: {
-                    'Content-Type': 'application/json'
+                  "Content-Type": "application/json",
                 },
-                withCredentials: true
-            });
+                withCredentials: true,
+              }
+            );
             if (res.data.success) {
                 dispatch(setAuthUser(res.data.user));
                 navigate("/");

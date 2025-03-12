@@ -35,7 +35,7 @@ const CommentDialog = ({ open, setOpen }) => {
 
     try {
       const res = await axios.post(
-        `https://localhost:8000/api/post/${selectedPost?._id}/comment`,
+        `https://bridgr.onrender.com/api/post/${selectedPost?._id}/comment`,
         { text },
         {
           headers: {

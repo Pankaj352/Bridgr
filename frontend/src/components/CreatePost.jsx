@@ -36,7 +36,7 @@ const CreatePost = ({ open, setOpen }) => {
     try {
       setLoading(true);
       const res = await axios.post(
-        "https://localhost:8000/api/post/addpost",
+        "https://bridgr.onrender.com/api/post/addpost",
         formData,
         {
           headers: {

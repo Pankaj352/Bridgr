@@ -11,7 +11,7 @@ const useGetAllMessage = () => {
         const fetchAllMessage = async () => {
             try {
                 const res = await axios.get(
-                  `https://localhost:8000/api/message/all/${selectedUser?._id}`,
+                  `https://bridgr.onrender.com/api/message/all/${selectedUser?._id}`,
                   { withCredentials: true }
                 );
                 if (res.data.success) {  

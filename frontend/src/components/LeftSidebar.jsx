@@ -22,7 +22,7 @@ const LeftSidebar = () => {
     const logoutHandler = async () => {
         try {
             const res = await axios.get(
-              "https://localhost:8000/api/user/logout",
+              "https://bridgr.onrender.com/api/user/logout",
               { withCredentials: true }
             );
             if (res.data.success) {
