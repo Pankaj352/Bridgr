@@ -33,7 +33,10 @@ const Post = ({ post }) => {
     const likeOrDislikeHandler = async () => {
         try {
             const action = liked ? 'dislike' : 'like';
-            const res = await axios.get(`https://instaclone-g9h5.onrender.com/api/v1/post/${post._id}/${action}`, { withCredentials: true });
+            const res = await axios.get(
+              `https://localhost:8000/api/post/${post._id}/${action}`,
+              { withCredentials: true }
+            );
             console.log(res.data);
             if (res.data.success) {
                 const updatedLikes = liked ? postLike - 1 : postLike + 1;

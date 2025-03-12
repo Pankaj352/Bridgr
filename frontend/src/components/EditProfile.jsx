@@ -42,12 +42,16 @@ const EditProfile = () => {
         }
         try {
             setLoading(true);
-            const res = await axios.post('https://instaclone-g9h5.onrender.com/api/v1/user/profile/edit', formData,{
-                headers:{
-                    'Content-Type':'multipart/form-data'
+            const res = await axios.post(
+              "https://localhost:8000/api/user/profile/edit",
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
                 },
-                withCredentials:true
-            });
+                withCredentials: true,
+              }
+            );
             if(res.data.success){
                 const updatedUserData = {
                     ...user,
