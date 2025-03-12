@@ -8,9 +8,8 @@ import postRoute from "./routes/post.route.js";
 import messageRoute from "./routes/message.route.js";
 import { app, server } from "./socket/socket.js";
 import path from "path";
- 
-dotenv.config();
 
+dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 
@@ -26,7 +25,6 @@ const corsOptions = {
 }
 app.use(cors(corsOptions));
 
-// yha pr apni api ayengi
 app.use("/api/user", userRoute);
 app.use("/api/post", postRoute);
 app.use("/api/message", messageRoute);
