@@ -20,7 +20,7 @@ const ChatPage = () => {
   const sendMessageHandler = async (receiverId) => {
     try {
       const res = await axios.post(
-        `https://bridgr.onrender.com/api/message/send/${receiverId}`,
+        `https://instaclone-g9h5.onrender.com/api/v1/message/send/${receiverId}`,
         { textMessage },
         {
           headers: {
@@ -53,6 +53,7 @@ const ChatPage = () => {
           {suggestedUsers.map((suggestedUser) => {
             const isOnline = onlineUsers.includes(suggestedUser?._id);
             return (
+              // eslint-disable-next-line react/jsx-key
               <div
                 onClick={() => dispatch(setSelectedUser(suggestedUser))}
                 className="flex gap-3 items-center p-3 hover:bg-gray-50 cursor-pointer">
