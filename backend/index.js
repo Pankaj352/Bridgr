@@ -11,10 +11,10 @@ import path from "path";
 
 dotenv.config();
 
-// Checking if MONGO_URI is loaded correctly
 console.log("MONGO_URI:", process.env.MONGO_URI);
 
 const PORT = process.env.PORT || 3000;
+
 const __dirname = path.resolve();
 
 //middlewares
@@ -23,29 +23,23 @@ app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
 
 const corsOptions = {
-  origin: process.env.URL,
-  credentials: true,
-};
+    origin: process.env.URL,
+    credentials: true
+}
 app.use(cors(corsOptions));
 
-// API Routes
 app.use("/api/user", userRoute);
 app.use("/api/post", postRoute);
 app.use("/api/message", messageRoute);
 
-// Serving frontend
-app.use(express.static(path.join(__dirname, "/frontend/dist")));
-app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
-});
 
-// Connect to Database and Start Server
-connectDB()
-  .then(() => {
-    server.listen(PORT, () => {
-      console.log(`Server listening at port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error("Failed to connect to MongoDB:", err.message);
-  });
+app.use(express.static(path.join(__dirname, "/frontend/dist")));
+app.get("*", (req,res)=>{
+    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+})
+
+
+server.listen(PORT, () => {
+    connectDB();
+    console.log(`Server listen at port ${PORT}`);
+});
