@@ -107,7 +107,7 @@ const Signup = () => {
           <Button type="submit">Signup</Button>
         )}
         <span className="text-center">
-          Already have an account?{" "}
+          Already have an account? {" "}
           <Link to="/login" className="text-blue-600">
             Login
           </Link>

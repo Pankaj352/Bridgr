@@ -66,7 +66,7 @@ const Login = () => {
         <div className="my-4">
           <h1 className="text-center font-bold text-xl">Bridgr</h1>
           <p className="text-sm text-center">
-            Login to see photos & videos from your friends
+            Login to explore the world of Bridgr
           </p>
         </div>
         <div>
@@ -99,7 +99,7 @@ const Login = () => {
         )}
 
         <span className="text-center">
-          Dosent have an account?{" "}
+          Don&apso;t have an account? {" "}
           <Link to="/signup" className="text-blue-600">
             Signup
           </Link>
