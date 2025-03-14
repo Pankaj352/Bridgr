@@ -175,6 +175,37 @@ export const getSuggestedUsers = async (req, res) => {
     console.log(error);
   }
 };
+export const searchUsers = async (req, res) => {
+  try {
+    const { query } = req.query;
+    if (!query) {
+      return res.status(400).json({
+        message: "Search query is required",
+        success: false,
+      });
+    }
+
+    const users = await User.find({
+      $or: [
+        { username: { $regex: query, $options: 'i' } },
+        { email: { $regex: query, $options: 'i' } },
+        { bio: { $regex: query, $options: 'i' } }
+      ]
+    }).select('-password').limit(10);
+
+    return res.status(200).json({
+      success: true,
+      users,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false,
+    });
+  }
+};
+
 export const followOrUnfollow = async (req, res) => {
   try {
     const followKrneWala = req.id; // patel
