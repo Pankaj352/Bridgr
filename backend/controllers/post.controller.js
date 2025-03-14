@@ -45,6 +45,33 @@ export const addNewPost = async (req, res) => {
         console.log(error);
     }
 }
+export const getTrendingPosts = async (req, res) => {
+    try {
+        const posts = await Post.find()
+            .populate({ path: 'author', select: '-password' })
+            .populate('comments')
+            .sort({ createdAt: -1 });
+
+        // Sort posts by total engagement (likes + comments)
+        const trendingPosts = posts.sort((a, b) => {
+            const engagementA = a.likes.length + a.comments.length;
+            const engagementB = b.likes.length + b.comments.length;
+            return engagementB - engagementA;
+        });
+
+        return res.status(200).json({
+            success: true,
+            posts: trendingPosts
+        });
+    } catch (error) {
+        console.error('Error fetching trending posts:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error fetching trending posts'
+        });
+    }
+}
+
 export const getAllPost = async (req, res) => {
     try {
         const posts = await Post.find().sort({ createdAt: -1 })

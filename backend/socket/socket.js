@@ -25,6 +25,19 @@ io.on('connection', (socket)=>{
 
     io.emit('getOnlineUsers', Object.keys(userSocketMap));
 
+    // Handle notifications
+    socket.on('sendNotification', ({ receiverId, type, postId }) => {
+        const receiverSocketId = getReceiverSocketId(receiverId);
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit('getNotification', {
+                sender: userId,
+                type,
+                postId,
+                createdAt: new Date()
+            });
+        }
+    });
+
     socket.on('disconnect',()=>{
         if(userId){
             delete userSocketMap[userId];

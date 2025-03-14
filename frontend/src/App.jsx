@@ -4,6 +4,7 @@ import EditProfile from './components/EditProfile'
 import Home from './components/Home'
 import Login from './components/Login'
 import MainLayout from './components/MainLayout'
+import Notifications from './components/Notifications'
 import Profile from './components/Profile'
 import Signup from './components/Signup'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
@@ -35,6 +36,10 @@ const browserRouter = createBrowserRouter([
       {
         path: '/chat',
         element: <ProtectedRoutes><ChatPage /></ProtectedRoutes>
+      },
+      {
+        path: '/notifications',
+        element: <ProtectedRoutes><Notifications /></ProtectedRoutes>
       },
     ]
   },

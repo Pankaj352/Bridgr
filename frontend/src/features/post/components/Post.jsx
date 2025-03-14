@@ -1,15 +1,15 @@
 import React, { useState } from 'react'
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
-import { Dialog, DialogContent, DialogTrigger } from './ui/dialog'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import { Bookmark, MessageCircle, MoreHorizontal, Send } from 'lucide-react'
-import { Button } from './ui/button'
+import { Button } from '@/components/ui/button'
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import CommentDialog from './CommentDialog'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 import { toast } from 'sonner'
 import { setPosts, setSelectedPost } from '@/redux/postSlice'
-import { Badge } from './ui/badge'
+import { Badge } from '@/components/ui/badge'
 
 const Post = ({ post }) => {
     const [text, setText] = useState("");
@@ -43,7 +43,6 @@ const Post = ({ post }) => {
                 setPostLike(updatedLikes);
                 setLiked(!liked);
 
-                // apne post ko update krunga
                 const updatedPostData = posts.map(p =>
                     p._id === post._id ? {
                         ...p,
@@ -59,9 +58,8 @@ const Post = ({ post }) => {
     }
 
     const commentHandler = async () => {
-
         try {
-            const res = await axios.post(`https://instaclone-g9h5.onrender.com/api/v1/post/${post._id}/comment`, { text }, {
+            const res = await axios.post(`https://bridgr.onrender.com/api/post/${post._id}/comment`, { text }, {
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -87,7 +85,7 @@ const Post = ({ post }) => {
 
     const deletePostHandler = async () => {
         try {
-            const res = await axios.delete(`https://instaclone-g9h5.onrender.com/api/v1/post/delete/${post?._id}`, { withCredentials: true })
+            const res = await axios.delete(`https://bridgr.onrender.com/api/post/delete/${post?._id}`, { withCredentials: true })
             if (res.data.success) {
                 const updatedPostData = posts.filter((postItem) => postItem?._id !== post?._id);
                 dispatch(setPosts(updatedPostData));
@@ -101,7 +99,7 @@ const Post = ({ post }) => {
 
     const bookmarkHandler = async () => {
         try {
-            const res = await axios.get(`https://instaclone-g9h5.onrender.com/api/v1/post/${post?._id}/bookmark`, {withCredentials:true});
+            const res = await axios.get(`https://bridgr.onrender.com/api/post/${post?._id}/bookmark`, {withCredentials:true});
             if(res.data.success){
                 toast.success(res.data.message);
             }

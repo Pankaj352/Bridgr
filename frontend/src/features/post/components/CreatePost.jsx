@@ -1,8 +1,8 @@
 import React, { useRef, useState } from 'react'
-import { Dialog, DialogContent, DialogHeader } from './ui/dialog'
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Textarea } from './ui/textarea';
-import { Button } from './ui/button';
+import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 import { readFileAsDataURL } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -46,7 +46,7 @@ const CreatePost = ({ open, setOpen }) => {
         }
       );
       if (res.data.success) {
-        dispatch(setPosts([res.data.post, ...posts]));// [1] -> [1,2] -> total element = 2
+        dispatch(setPosts([res.data.post, ...posts]));
         toast.success(res.data.message);
         setOpen(false);
       }
