@@ -9,15 +9,15 @@ export const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
     if (!username || !email || !password) {
-      return res.status(401).json({
-        message: "Something is missing, please check!",
+      return res.status(400).json({
+        message: "Please provide username, email and password",
         success: false,
       });
     }
     const user = await User.findOne({ email });
     if (user) {
-      return res.status(401).json({
-        message: "Try different email",
+      return res.status(400).json({
+        message: "Email already exists",
         success: false,
       });
     }
@@ -33,6 +33,10 @@ export const register = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false
+    });
   }
 };
 export const login = async (req, res) => {
@@ -208,8 +212,8 @@ export const searchUsers = async (req, res) => {
 
 export const followOrUnfollow = async (req, res) => {
   try {
-    const followKrneWala = req.id; // patel
-    const jiskoFollowKrunga = req.params.id; // shivani
+    const followKrneWala = req.id; 
+    const jiskoFollowKrunga = req.params.id; 
     if (followKrneWala === jiskoFollowKrunga) {
       return res.status(400).json({
         message: "You cannot follow/unfollow yourself",
