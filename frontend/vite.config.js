@@ -11,10 +11,12 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ['date-fns'],
+      external: ['date-fns', '@emoji-mart/data', '@emoji-mart/react'],
       output: {
         globals: {
-          'date-fns': 'dateFns'
+          'date-fns': 'dateFns',
+          '@emoji-mart/data': 'emojiMartData',
+          '@emoji-mart/react': 'emojiMartReact'
         }
       }
     }
