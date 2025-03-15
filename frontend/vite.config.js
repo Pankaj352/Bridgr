@@ -11,12 +11,12 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ['next-themes'],
+      external: ['next-themes', '@emoji-mart/data', '@emoji-mart/react'],
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
           ui: ['@radix-ui/react-avatar', '@radix-ui/react-dialog', '@radix-ui/react-popover'],
-          utils: ['date-fns']
+          utils: ['date-fns', '@emoji-mart/data', '@emoji-mart/react']
         }
       }
     },
