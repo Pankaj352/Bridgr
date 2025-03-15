@@ -18,7 +18,7 @@ export default defineConfig({
           utils: ['date-fns', '@emoji-mart/data', '@emoji-mart/react']
         }
       },
-      external: ['next-themes']
+      external: ['next-themes', '@emoji-mart/data']
     },
     chunkSizeWarningLimit: 1000,
     sourcemap: true
