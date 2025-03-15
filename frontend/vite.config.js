@@ -11,17 +11,15 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ['date-fns', '@emoji-mart/data', '@emoji-mart/react', 'redux-persist/integration/react', 'next-themes', '@radix-ui/react-popover'],
       output: {
-        globals: {
-          'date-fns': 'dateFns',
-          '@emoji-mart/data': 'emojiMartData',
-          '@emoji-mart/react': 'emojiMartReact',
-          'redux-persist/integration/react': 'ReduxPersistIntegration',
-          'next-themes': 'nextThemes',
-          '@radix-ui/react-popover': 'RadixUIReactPopover'
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          ui: ['@radix-ui/react-avatar', '@radix-ui/react-dialog', '@radix-ui/react-popover'],
+          utils: ['date-fns', '@emoji-mart/data', '@emoji-mart/react']
         }
       }
-    }
+    },
+    chunkSizeWarningLimit: 1000,
+    sourcemap: true
   },
 })
