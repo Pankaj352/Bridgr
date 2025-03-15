@@ -14,10 +14,11 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['@radix-ui/react-avatar', '@radix-ui/react-dialog', '@radix-ui/react-popover'],
+          ui: ['@radix-ui/react-avatar', '@radix-ui/react-dialog', '@radix-ui/react-popover', 'next-themes'],
           utils: ['date-fns', '@emoji-mart/data', '@emoji-mart/react']
         }
-      }
+      },
+      external: ['next-themes']
     },
     chunkSizeWarningLimit: 1000,
     sourcemap: true
