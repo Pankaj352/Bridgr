@@ -11,6 +11,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
+      external: ['next-themes'],
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
