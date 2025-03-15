@@ -11,13 +11,14 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ['date-fns', '@emoji-mart/data', '@emoji-mart/react', 'redux-persist/integration/react'],
+      external: ['date-fns', '@emoji-mart/data', '@emoji-mart/react', 'redux-persist/integration/react', 'next-themes'],
       output: {
         globals: {
           'date-fns': 'dateFns',
           '@emoji-mart/data': 'emojiMartData',
           '@emoji-mart/react': 'emojiMartReact',
-          'redux-persist/integration/react': 'ReduxPersistIntegration'
+          'redux-persist/integration/react': 'ReduxPersistIntegration',
+          'next-themes': 'nextThemes'
         }
       }
     }
