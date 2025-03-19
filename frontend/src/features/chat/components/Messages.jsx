@@ -73,38 +73,40 @@ const Messages = ({ selectedUser }) => {
   }, [selectedUser]);
 
   // @ts-ignore
-  const handleReaction = async (messageId, emoji = "❤️") => {
-    try {
-      const reactionType = emoji;
-      const res = await axios.post(
-        `https://bridgr.onrender.com/api/message/react/${messageId}`,
-        { reactionType },
-        { withCredentials: true }
+  const handleReaction = async (messageId, emoji) => {
+  try {
+    const reactionType = emoji || "❤️";  // Default to heart emoji if none provided
+    const res = await axios.post(
+      `https://bridgr.onrender.com/api/message/react/${messageId}`,
+      { reactionType },
+      { withCredentials: true }
+    );
+
+    if (res.data.success) {
+      const updatedMessages = messages.map(msg =>
+        msg._id === messageId
+          ? { ...msg, reactions: res.data.reactions }
+          : msg
       );
-      if (res.data.success) {
-        const updatedMessages = messages.map(msg =>
-          msg._id === messageId
-            ? { ...msg, reactions: res.data.reactions }
-            : msg
-        );
-        dispatch(setMessages(updatedMessages));
+      dispatch(setMessages(updatedMessages));
 
-        const currentSocket = getSocket();
-        if (currentSocket) {
-          currentSocket.emit('messageReaction', {
-            messageId,
-            reactions: res.data.reactions,
-            receiverId: selectedUser._id
-          });
-        }
-
-        toast.success('Reaction added');
+      const currentSocket = getSocket();
+      if (currentSocket) {
+        currentSocket.emit('messageReaction', {
+          messageId,
+          reactions: res.data.reactions,
+          receiverId: selectedUser._id
+        });
       }
-    } catch (error) {
-      console.error('Error adding reaction:', error);
-      toast.error(error.response?.data?.message || 'Failed to react to message');
+
+      toast.success('Reaction added');
     }
-  };
+  } catch (error) {
+    console.error('Error adding reaction:', error);
+    toast.error(error?.response?.data?.message || 'Failed to react to message');
+  }
+};
+
 
   // @ts-ignore
   const handleForward = async (message) => {
