@@ -7,7 +7,7 @@ const useNotification = () => {
 
     const getNotifications = async () => {
         try {
-            const { data } = await axios.get('/api/notification');
+            const { data } = await axios.get(API_ENDPOINTS.GET_NOTIFICATIONS);
             if (data.success) {
                 dispatch(setLikeNotification(data.notifications));
             }
@@ -18,7 +18,7 @@ const useNotification = () => {
 
     const markAsRead = async (notificationId) => {
         try {
-            const { data } = await axios.post(`/api/notification/${notificationId}/read`);
+            const { data } = await axios.post(API_ENDPOINTS.READ_NOTIFICATION(notificationId));
             if (data.success) {
                 getNotifications(); // Refresh notifications after marking as read
             }
@@ -29,7 +29,7 @@ const useNotification = () => {
 
     const markAllAsRead = async () => {
         try {
-            const { data } = await axios.post('/api/notification/read/all');
+            const { data } = await axios.post(API_ENDPOINTS.READ_ALL_NOTIFICATIONS);
             if (data.success) {
                 getNotifications(); // Refresh notifications after marking all as read
             }

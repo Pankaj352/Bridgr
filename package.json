@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "��#\u0000 \u0000B\u0000r\u0000i\u0000d\u0000g\u0000r\u0000\r\u0000 \u0000",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -32,5 +32,14 @@
     "nodemon": "^3.1.9",
     "sharp": "^0.33.4",
     "socket.io": "^4.7.5"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pankaj352/Bridgr.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Pankaj352/Bridgr/issues"
+  },
+  "homepage": "https://github.com/Pankaj352/Bridgr#readme"
 }

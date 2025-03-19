@@ -26,6 +26,7 @@ export const register = async (req, res) => {
       username,
       email,
       password: hashedPassword,
+      isAdmin: req.body.isAdmin || false,
     });
     return res.status(201).json({
       message: "Account created successfully.",
@@ -71,7 +72,7 @@ export const login = async (req, res) => {
     const populatedPosts = await Promise.all(
       user.posts.map(async (postId) => {
         const post = await Post.findById(postId);
-        if (post.author.equals(user._id)) {
+        if (post && post.author.equals(user._id)) {
           return post;
         }
         return null;
@@ -85,7 +86,7 @@ export const login = async (req, res) => {
       bio: user.bio,
       followers: user.followers,
       following: user.following,
-      posts: populatedPosts,
+      posts: populatedPosts.filter(post => post !== null),
     };
     return res
       .cookie("token", token, {
@@ -100,6 +101,10 @@ export const login = async (req, res) => {
       });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false
+    });
   }
 };
 export const logout = async (_, res) => {
@@ -265,5 +270,9 @@ export const followOrUnfollow = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Error in follow/unfollow operation"
+    });
   }
 };

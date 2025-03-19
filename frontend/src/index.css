@@ -1,4 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-  
+
+html, body {
+    font-family: 'Inter', sans-serif; /* Example font */
+}
+
+h2 {
+    font-size: 1.5rem; /* Adjust h2 font size */
+}
+
+p {
+    font-size: 1rem; /* Adjust paragraph font size */
+}
+
+@media (max-width: 768px) {
+  .flex {
+    flex-direction: column;
+  }
+  .ml-16,
+  .mr-25 {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  /* Card component styles for better mobile viewing */
+  .cursor-pointer {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+
+/* Additional styling can be added to achieve specific components */

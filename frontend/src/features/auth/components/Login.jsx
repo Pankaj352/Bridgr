@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { setAuthUser } from '@/redux/authSlice';
+import { API_ENDPOINTS } from '@/config/api';
 
 const Login = () => {
     const [input, setInput] = useState({
@@ -22,20 +23,40 @@ const Login = () => {
     const loginHandler = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post('https://bridgr.onrender.com/api/user/login', input, {
+            // Basic validation
+            if (!input.email.trim() || !input.password.trim()) {
+                toast.error('Please fill in all fields');
+                return;
+            }
+
+            // Email format validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(input.email)) {
+                toast.error('Please enter a valid email address');
+                return;
+            }
+
+            const res = await axios.post(API_ENDPOINTS.LOGIN, input, {
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 withCredentials: true
             });
+
             if (res.data.success) {
                 dispatch(setAuthUser(res.data.user));
-                navigate('/');
+                // Redirect admin users to admin dashboard, others to home
+                if (res.data.user.isAdmin) {
+                    navigate('/admin');
+                } else {
+                    navigate('/');
+                }
                 toast.success(res.data.message);
             }
         } catch (error) {
-            console.log(error);
-            toast.error(error.response.data.message);
+            console.error('Login error:', error);
+            const errorMessage = error.response?.data?.message || 'An error occurred during login. Please try again.';
+            toast.error(errorMessage);
         }
     }
 

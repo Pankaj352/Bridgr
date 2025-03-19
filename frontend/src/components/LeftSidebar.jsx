@@ -1,23 +1,23 @@
-import { Heart, Home, LogOut, MessageCircle, PlusSquare, Search, TrendingUp } from 'lucide-react'
+import { Heart, Home, LogOut, MessageCircle, PlusSquare, Search, TrendingUp, Bookmark } from 'lucide-react'
 import React, { useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { toast } from 'sonner'
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { setAuthUser } from '@/redux/authSlice'
 import CreatePost from '@/features/post/components/CreatePost'
 import { setPosts, setSelectedPost } from '@/redux/postSlice'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
-import { Button } from './ui/button'
+import { Button } from './ui/button';
 
 const LeftSidebar = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { user } = useSelector(store => store.auth);
-    const { likeNotification, commentNotification, followNotification, bookmarks } = useSelector(store => store.realTimeNotification);
+    const { likeNotification = [], commentNotification = [], followNotification = [], bookmarks = [] } = useSelector(store => store.realTimeNotification);
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
-
     const totalNotifications = likeNotification.length + commentNotification.length + followNotification.length;
 
     const logoutHandler = async () => {
@@ -41,7 +41,7 @@ const LeftSidebar = () => {
     const sidebarHandler = (textType) => {
         if (textType === 'Logout') {
             logoutHandler();
-        } else if (textType === "Create") {
+        } else if (textType === "Create Post") {
             setOpen(true);
         } else if (textType === "Profile") {
             navigate(`/profile/${user?._id}`);
@@ -62,7 +62,7 @@ const LeftSidebar = () => {
         { icon: <TrendingUp />, text: "Explore" },
         { icon: <MessageCircle />, text: "Messages" },
         { icon: <Heart />, text: "Notifications" },
-        { icon: <PlusSquare />, text: "Create" },
+        { icon: <PlusSquare />, text: "Create Post" },
         { icon: <Bookmark />, text: "Bookmarks" },
         {
             icon: (
@@ -76,21 +76,31 @@ const LeftSidebar = () => {
         { icon: <LogOut />, text: "Logout" },
     ]
     return (
-        <div className='fixed top-0 z-10 left-0 px-4 border-r border-gray-300 w-[16%] h-screen'>
+        <div className='fixed top-0 z-10 left-0 px-4 border-r border-gray-300 w-[20%] h-screen'>
             <div className='flex flex-col'>
                 <h1 className='my-8 pl-3 font-bold text-xl'>Bridgr</h1>
                 <div>
                     {
                         sidebarItems.map((item, index) => {
                             return (
-                                <div onClick={() => sidebarHandler(item.text)} key={index} className='flex items-center gap-3 relative hover:bg-gray-100 cursor-pointer rounded-lg p-3 my-3'>
-                                    {item.icon}
-                                    <span>{item.text}</span>
+                                <div 
+                                    onClick={() => sidebarHandler(item.text)} 
+                                    key={index} 
+                                    className={`flex items-center gap-3 relative hover:bg-gray-100 cursor-pointer rounded-lg p-3 my-3 ${(
+                                        (item.text === 'Home' && location.pathname === '/') ||
+                                        (item.text === 'Search' && location.pathname === '/search') ||
+                                        (item.text === 'Explore' && location.pathname === '/explore') ||
+                                        (item.text === 'Messages' && location.pathname === '/chat') ||
+                                        (item.text === 'Profile' && location.pathname.includes('/profile')) ||
+                                        (item.text === 'Bookmarks' && location.pathname === '/bookmarks')
+                                    ) ? 'bg-gray-100 font-semibold' : ''}`}>
+                                    <div className='w-6 h-6 flex items-center justify-center'>{item.icon}</div>
+                                    <span className='hidden md:block'>{item.text}</span>
                                     {
                                         item.text === "Notifications" && totalNotifications > 0 && (
                                             <Popover>
                                                 <PopoverTrigger asChild>
-                                                    <Button size='icon' className="rounded-full h-5 w-5 bg-red-600 hover:bg-red-600 absolute bottom-6 left-6">{totalNotifications}</Button>
+                                                    <Button size='icon' className="rounded-full h-5 w-5 bg-red-600 hover:bg-red-600 absolute -top-1 -right-1 md:top-auto md:right-auto md:bottom-6 md:left-6">{totalNotifications}</Button>
                                                 </PopoverTrigger>
                                                 <PopoverContent className="w-80">
                                                     <div className="space-y-4">

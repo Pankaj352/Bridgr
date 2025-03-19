@@ -3,14 +3,18 @@ import { createSlice } from "@reduxjs/toolkit";
 const socketSlice = createSlice({
     name:"socketio",
     initialState:{
-        socket:null
+        isConnected: false,
+        lastError: null
     },
     reducers:{
         // actions
-        setSocket:(state,action) => {
-            state.socket = action.payload;
+        setSocketStatus:(state, action) => {
+            state.isConnected = action.payload;
+        },
+        setSocketError:(state, action) => {
+            state.lastError = action.payload;
         }
     }
 });
-export const {setSocket} = socketSlice.actions;
+export const { setSocketStatus, setSocketError } = socketSlice.actions;
 export default socketSlice.reducer;

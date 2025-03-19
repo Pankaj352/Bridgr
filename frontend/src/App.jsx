@@ -1,19 +1,22 @@
 import { useEffect } from 'react'
 import ChatPage from './features/chat/components/ChatPage'
 import EditProfile from './features/auth/components/EditProfile'
+import Explore from './features/explore/components/Explore'
 import Home from './components/Home'
 import Login from './features/auth/components/Login'
 import MainLayout from './components/MainLayout'
 import Notifications from './features/notifications/components/Notifications'
 import Profile from './components/Profile'
 import Signup from './features/auth/components/Signup'
+import Search from './features/search/components/Search'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { io } from "socket.io-client";
 import { useDispatch, useSelector } from 'react-redux'
-import { setSocket } from './redux/socketSlice'
+import { setSocketStatus } from './redux/socketSlice'
 import { setOnlineUsers } from './redux/chatSlice'
 import { setLikeNotification } from './redux/rtnSlice'
 import ProtectedRoutes from './components/ProtectedRoutes'
+import PostDetail from './features/post/components/PostDetail'
 
 
 const browserRouter = createBrowserRouter([
@@ -41,6 +44,18 @@ const browserRouter = createBrowserRouter([
         path: '/notifications',
         element: <ProtectedRoutes><Notifications /></ProtectedRoutes>
       },
+      {
+        path: '/search',
+        element: <ProtectedRoutes><Search /></ProtectedRoutes>
+      },
+      {
+        path: '/explore',
+        element: <ProtectedRoutes><Explore /></ProtectedRoutes>
+      },
+      {
+        path: '/post/:id',
+        element: <ProtectedRoutes><PostDetail /></ProtectedRoutes>
+      },
     ]
   },
   {
@@ -55,7 +70,6 @@ const browserRouter = createBrowserRouter([
 
 function App() {
   const { user } = useSelector(store => store.auth);
-  const { socket } = useSelector(store => store.socketio);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -66,7 +80,9 @@ function App() {
         },
         transports: ['websocket']
       });
-      dispatch(setSocket(socketio));
+
+      // Update connection status in Redux
+      dispatch(setSocketStatus(true));
 
       // listen all the events
       socketio.on('getOnlineUsers', (onlineUsers) => {
@@ -77,13 +93,20 @@ function App() {
         dispatch(setLikeNotification(notification));
       });
 
+      socketio.on('disconnect', () => {
+        dispatch(setSocketStatus(false));
+      });
+
+      socketio.on('connect', () => {
+        dispatch(setSocketStatus(true));
+      });
+
       return () => {
         socketio.close();
-        dispatch(setSocket(null));
+        dispatch(setSocketStatus(false));
       }
-    } else if (socket) {
-      socket.close();
-      dispatch(setSocket(null));
+    } else {
+      dispatch(setSocketStatus(null));
     }
   }, [user, dispatch]);
 

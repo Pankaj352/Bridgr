@@ -5,6 +5,8 @@ const chatSlice = createSlice({
     initialState:{
         onlineUsers:[],
         messages:[],
+        socketConnected: false,
+        socketId: null
     },
     reducers:{
         // actions
@@ -13,6 +15,12 @@ const chatSlice = createSlice({
         },
         setMessages:(state,action) => {
             state.messages = action.payload;
+        },
+        setSocketStatus:(state,action) => {
+            state.socketConnected = action.payload;
+        },
+        setSocketId:(state,action) => {
+            state.socketId = action.payload;
         }
     }
 });
