@@ -125,7 +125,7 @@ const Messages = ({ selectedUser }) => {
   const handleForward = async (message) => {
     try {
       await axios.post(
-        `http://localhost:8000/api/message/forward/${message._id}`,
+        `https://bridgr.onrender.com/api/message/forward/${message._id}`,
         { receiverId: selectedUser._id },
         { withCredentials: true }
       );

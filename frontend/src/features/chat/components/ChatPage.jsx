@@ -66,7 +66,7 @@ const ChatPage = () => {
 
     try {
       const res = await axios.post(
-        `http://localhost:8000/api/message/send/${selectedUser?._id}`,
+        `https://bridgr.onrender.com/api/message/send/${selectedUser?._id}`,
         formData,
         {
           headers: {
@@ -99,7 +99,7 @@ const ChatPage = () => {
 
     try {
       const res = await axios.post(
-        `http://localhost:8000/api/message/send/${receiverId}`,
+        `https://bridgr.onrender.com/api/message/send/${receiverId}`,
         { textMessage: textMessage },
         {
           headers: {
@@ -173,7 +173,7 @@ const ChatPage = () => {
           formData.append('textMessage', '');
 
           const res = await axios.post(
-            `http://localhost:8000/api/message/send/${selectedUser?._id}`,
+            `https://bridgr.onrender.com/api/message/send/${selectedUser?._id}`,
             formData,
             {
               headers: {
