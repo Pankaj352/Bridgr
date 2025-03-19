@@ -19,7 +19,7 @@ interface User {
   _id: string;
   username: string;
   profilePicture?: string;
-}
+};
 
 interface Message {
   _id: string;
@@ -32,11 +32,11 @@ interface Message {
   replyTo?: Message;
   seen: boolean;
   delivered: boolean;
-}
+};
 
 interface Props {
   selectedUser: User;
-}
+};
 
 const Messages: React.FC<Props> = ({ selectedUser }) => {
   const dispatch = useDispatch();
