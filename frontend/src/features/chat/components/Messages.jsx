@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { setMessages } from "@/redux/chatSlice";
@@ -14,102 +14,122 @@ import EmojiPicker from "emoji-picker-react";
 import { getSocket } from "@/socket";
 import CallHandler from "./CallHandler";
 
-// @ts-ignore
-const Messages = ({ selectedUser }) => {
+// Type definitions
+interface User {
+  _id: string;
+  username: string;
+  profilePicture?: string;
+}
+
+interface Message {
+  _id: string;
+  sender: string;
+  text: string;
+  fileUrl?: string;
+  fileName?: string;
+  createdAt: string;
+  reactions: Array<{ emoji: string }>;
+  replyTo?: Message;
+  seen: boolean;
+  delivered: boolean;
+}
+
+interface Props {
+  selectedUser: User;
+}
+
+const Messages: React.FC<Props> = ({ selectedUser }) => {
   const dispatch = useDispatch();
-  // @ts-ignore
-  const [showCallControls, setShowCallControls] = useState(false);
-  const messagesEndRef = useRef(null);
-  // @ts-ignore
-  const { user } = useSelector((store) => store.auth);
-  // @ts-ignore
-  const { messages } = useSelector((store) => store.chat);
-  // @ts-ignore
-  const [replyingTo, setReplyingTo] = useState(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const { user } = useSelector((store: any) => store.auth);
+  const { messages } = useSelector((store: any) => store.chat);
+  const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [selectedMessage, setSelectedMessage] = useState(null);
-  const typingTimeoutRef = useRef(null);
+  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [showCallDialog, setShowCallDialog] = useState(false);
+  const [activeCallType, setActiveCallType] = useState<string | null>(null);
 
   useGetAllMessage();
   useGetRTM();
 
-  const scrollToBottom = () => {
-    // @ts-ignore
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const scrollToBottom = useCallback(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, scrollToBottom]);
 
   useEffect(() => {
     const currentSocket = getSocket();
     if (!currentSocket) return;
 
-    currentSocket.on("userTyping", ({ senderId }) => {
+    const handleUserTyping = ({ senderId }: { senderId: string }) => {
       if (senderId === selectedUser?._id) {
         setIsTyping(true);
         if (typingTimeoutRef.current) {
           clearTimeout(typingTimeoutRef.current);
         }
-        // @ts-ignore
         typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 3000);
       }
-    });
+    };
 
-    currentSocket.on("userStoppedTyping", ({ senderId }) => {
+    const handleUserStoppedTyping = ({ senderId }: { senderId: string }) => {
       if (senderId === selectedUser?._id) {
         setIsTyping(false);
       }
-    });
+    };
+
+    currentSocket.on("userTyping", handleUserTyping);
+    currentSocket.on("userStoppedTyping", handleUserStoppedTyping);
 
     return () => {
       if (currentSocket) {
-        currentSocket.off("userTyping");
-        currentSocket.off("userStoppedTyping");
+        currentSocket.off("userTyping", handleUserTyping);
+        currentSocket.off("userStoppedTyping", handleUserStoppedTyping);
       }
     };
   }, [selectedUser]);
 
-  // @ts-ignore
-  const handleReaction = async (messageId, emoji) => {
-  try {
-    const reactionType = emoji || "❤️";  // Default to heart emoji if none provided
-    const res = await axios.post(
-      `https://bridgr.onrender.com/api/message/react/${messageId}`,
-      { reactionType },
-      { withCredentials: true }
-    );
-
-    if (res.data.success) {
-      const updatedMessages = messages.map(msg =>
-        msg._id === messageId
-          ? { ...msg, reactions: res.data.reactions }
-          : msg
+  // Handle message reactions
+  const handleReaction = useCallback(async (messageId: string, emoji?: string) => {
+    try {
+      const reactionType = emoji || "❤️"; // Default to heart emoji if none provided
+      const res = await axios.post(
+        `https://bridgr.onrender.com/api/message/react/${messageId}`,
+        { reactionType },
+        { withCredentials: true }
       );
-      dispatch(setMessages(updatedMessages));
 
-      const currentSocket = getSocket();
-      if (currentSocket) {
-        currentSocket.emit('messageReaction', {
-          messageId,
-          reactions: res.data.reactions,
-          receiverId: selectedUser._id
-        });
+      if (res.data.success) {
+        const updatedMessages = messages.map((msg: Message) =>
+          msg._id === messageId ? { ...msg, reactions: res.data.reactions } : msg
+        );
+        dispatch(setMessages(updatedMessages));
+
+        const currentSocket = getSocket();
+        if (currentSocket) {
+          currentSocket.emit("messageReaction", {
+            messageId,
+            reactions: res.data.reactions,
+            receiverId: selectedUser._id,
+          });
+        }
+
+        toast.success("Reaction added");
       }
-
-      toast.success('Reaction added');
+    } catch (error) {
+      console.error("Error adding reaction:", error);
+      toast.error(error?.response?.data?.message || "Failed to react to message");
     }
-  } catch (error) {
-    console.error('Error adding reaction:', error);
-    toast.error(error?.response?.data?.message || 'Failed to react to message');
-  }
-};
+  }, [dispatch, messages, selectedUser]);
 
-
-  // @ts-ignore
-  const handleForward = async (message) => {
+  // Forward message handler
+  const handleForward = useCallback(async (message: Message) => {
     try {
       await axios.post(
         `https://bridgr.onrender.com/api/message/forward/${message._id}`,
@@ -120,84 +140,66 @@ const Messages = ({ selectedUser }) => {
     } catch (error) {
       toast.error("Failed to forward message");
     }
-  };
+  }, [selectedUser]);
 
-  // @ts-ignore
-  const handleUnsend = async (messageId) => {
+  // Unsend message handler
+  const handleUnsend = useCallback(async (messageId: string) => {
     try {
       await axios.delete(
-        API_ENDPOINTS.DELETE_MESSAGE(messageId),
+        `https://bridgr.onrender.com/api/message/${messageId}`,
         { withCredentials: true }
       );
       toast.success("Message unsent");
     } catch (error) {
       toast.error("Failed to unsend message");
     }
-  };
+  }, []);
 
-  // @ts-ignore
-  const groupMessagesByDate = (messages) => {
-    const groups = {};
-    // @ts-ignore
-    messages?.forEach(message => {
+  // Group messages by date
+  const groupMessagesByDate = (messages: Message[]) => {
+    const groups: { [key: string]: Message[] } = {};
+    messages.forEach((message) => {
       const messageDate = message?.createdAt ? new Date(message.createdAt) : null;
       if (!messageDate || isNaN(messageDate.getTime())) {
-        // @ts-ignore
-        if (!groups['Invalid Date']) {
-          // @ts-ignore
-          groups['Invalid Date'] = [];
+        if (!groups["Invalid Date"]) {
+          groups["Invalid Date"] = [];
         }
-        // @ts-ignore
-        groups['Invalid Date'].push(message);
+        groups["Invalid Date"].push(message);
       } else {
-        const dateKey = messageDate.toISOString().split('T')[0];
-        // @ts-ignore
+        const dateKey = messageDate.toISOString().split("T")[0];
         if (!groups[dateKey]) {
-          // @ts-ignore
           groups[dateKey] = [];
         }
-        // @ts-ignore
         groups[dateKey].push(message);
       }
     });
     return groups;
   };
 
-  // @ts-ignore
-  const renderMessageContent = (message) => {
+  // Render message content
+  const renderMessageContent = (message: Message) => {
     if (message.fileUrl) {
-      const fileExtension = message.fileUrl.split('.').pop().toLowerCase();
-      const isImage = ['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension);
-      const isAudio = ['webm', 'mp3', 'wav', 'ogg'].includes(fileExtension);
+      const fileExtension = message.fileUrl.split(".").pop()?.toLowerCase();
+      const isImage = ["jpg", "jpeg", "png", "gif"].includes(fileExtension || "");
+      const isAudio = ["webm", "mp3", "wav", "ogg"].includes(fileExtension || "");
 
       if (isImage) {
-        return (
-          <img 
-            src={message.fileUrl} 
-            alt="shared image" 
-            className="max-w-[200px] rounded-lg"
-          />
-        );
+        return <img src={message.fileUrl} alt="shared image" className="max-w-[200px] rounded-lg" />;
       } else if (isAudio) {
         return (
           <div className="flex flex-col gap-2 w-full max-w-[240px]">
-            <audio 
-              controls 
-              className="w-full"
-              preload="metadata"
-              controlsList="nodownload noplaybackrate"
-            >
-              <source 
-                src={message.fileUrl} 
-                type={fileExtension === 'webm' ? 'audio/webm;codecs=opus' : `audio/${fileExtension}`} 
+            <audio controls className="w-full" preload="metadata" controlsList="nodownload noplaybackrate">
+              <source
+                src={message.fileUrl}
+                type={fileExtension === "webm" ? "audio/webm;codecs=opus" : `audio/${fileExtension}`}
               />
               Your browser does not support the audio element.
             </audio>
             <div className="flex items-center justify-between text-xs text-gray-500">
               <span>Audio Message</span>
-              <a 
-                href={message.fileUrl} 
-                download={message.fileName || 'audio-message'}
+              <a
+                href={message.fileUrl}
+                download={message.fileName || "audio-message"}
                 className="hover:text-gray-700 transition-colors"
                 onClick={(e) => e.stopPropagation()}
               >
@@ -208,13 +210,8 @@ const Messages = ({ selectedUser }) => {
         );
       } else {
         return (
-          <a 
-            href={message.fileUrl} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:underline"
-          >
-            📎 {message.fileName || 'Shared file'}
+          <a href={message.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+            📎 {message.fileName || "Shared file"}
           </a>
         );
       }
@@ -222,11 +219,8 @@ const Messages = ({ selectedUser }) => {
     return <span>{message.text}</span>;
   };
 
-  const [showCallDialog, setShowCallDialog] = useState(false);
-  const [activeCallType, setActiveCallType] = useState(null);
-
-  // @ts-ignore
-  const initiateCall = (type) => {
+  // Initiate call
+  const initiateCall = (type: "audio" | "video") => {
     setActiveCallType(type);
     setShowCallDialog(true);
   };
@@ -251,7 +245,7 @@ const Messages = ({ selectedUser }) => {
             variant="ghost"
             size="icon"
             className="h-9 w-9 rounded-full hover:bg-gray-100 transition-colors"
-            onClick={() => initiateCall('audio')}
+            onClick={() => initiateCall("audio")}
           >
             <Phone className="h-5 w-5 text-gray-600" />
           </Button>
@@ -259,7 +253,7 @@ const Messages = ({ selectedUser }) => {
             variant="ghost"
             size="icon"
             className="h-9 w-9 rounded-full hover:bg-gray-100 transition-colors"
-            onClick={() => initiateCall('video')}
+            onClick={() => initiateCall("video")}
           >
             <Video className="h-5 w-5 text-gray-600" />
           </Button>
@@ -271,33 +265,12 @@ const Messages = ({ selectedUser }) => {
             <div key={date}>
               <div className="text-center my-4">
                 <span className="bg-gray-200 text-gray-600 px-3 py-1 rounded-full text-xs shadow-sm">
-                  {(() => {
-                    const formatMessageDate = (date) => {
-                      if (date === 'Invalid Date') return 'Unknown Date';
-                      try {
-                        return format(new Date(date), 'MMMM d, yyyy');
-                      } catch {
-                        return 'Unknown Date';
-                      }
-                    };
-                    return formatMessageDate(date);
-                  })()} 
+                  {format(new Date(date), "MMMM d, yyyy")}
                 </span>
               </div>
               {dateMessages.map((message) => {
-                if (!message) return null;
-                
                 const isSender = message.sender === user?._id;
-                const messageTime = (() => {
-                  try {
-                    const messageDate = message.createdAt ? new Date(message.createdAt) : null;
-                    return messageDate && !isNaN(messageDate.getTime())
-                      ? format(messageDate, 'HH:mm')
-                      : 'Unknown time';
-                  } catch {
-                    return 'Unknown time';
-                  }
-                })();
+                const messageTime = format(new Date(message.createdAt), "HH:mm");
 
                 return (
                   <div
@@ -383,18 +356,18 @@ const Messages = ({ selectedUser }) => {
                         </PopoverContent>
                       </Popover>
 
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         className="h-8 w-8 rounded-full hover:bg-gray-100"
                         onClick={() => setReplyingTo(message)}
                       >
                         <Reply className="h-4 w-4" />
                       </Button>
 
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         className="h-8 w-8 rounded-full hover:bg-gray-100"
                         onClick={() => handleForward(message)}
                       >
@@ -408,14 +381,13 @@ const Messages = ({ selectedUser }) => {
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-48 p-0">
+                          <PopoverContent className="w-40 p-0">
                             <Button
                               variant="ghost"
-                              className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
+                              className="w-full text-left"
                               onClick={() => handleUnsend(message._id)}
                             >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Unsend
+                              <Trash2 className="h-4 w-4 mr-2" /> Unsend
                             </Button>
                           </PopoverContent>
                         </Popover>
@@ -426,18 +398,9 @@ const Messages = ({ selectedUser }) => {
               })}
             </div>
           ))}
-          <div ref={messagesEndRef} />
         </div>
       </div>
-      {showCallDialog && (
-        <CallHandler
-          isOpen={showCallDialog}
-          setIsOpen={setShowCallDialog}
-          selectedUser={selectedUser}
-          user={user}
-          callType={activeCallType}
-        />
-      )}
+      <CallHandler open={showCallDialog} onClose={() => setShowCallDialog(false)} callType={activeCallType} />
     </div>
   );
 };
