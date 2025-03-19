@@ -75,27 +75,13 @@ const Messages = ({ selectedUser }) => {
   // @ts-ignore
   const handleReaction = async (messageId, emoji = "❤️") => {
     try {
-      // Map emojis to valid reaction types
-      const emojiToReactionType = {
-        "❤️": "love",
-        "😊": "smiley",
-        "👍": "ok",
-        "😂": "haha",
-        "😍": "love",
-        "🎉": "wow",
-        "👏": "clap",
-        "🙌": "wow",
-        "💯": "100",
-        "🔥": "fire"
-      };
-      const reactionType = emojiToReactionType[emoji] || "like";
+      const reactionType = emoji;
       const res = await axios.post(
-        `http://localhost:8000/api/message/react/${messageId}`,
+        `https://bridgr.onrender.com/api/message/react/${messageId}`,
         { reactionType },
         { withCredentials: true }
       );
       if (res.data.success) {
-        // Update local state
         const updatedMessages = messages.map(msg =>
           msg._id === messageId
             ? { ...msg, reactions: res.data.reactions }
@@ -103,7 +89,6 @@ const Messages = ({ selectedUser }) => {
         );
         dispatch(setMessages(updatedMessages));
 
-        // Emit socket event for real-time updates
         const currentSocket = getSocket();
         if (currentSocket) {
           currentSocket.emit('messageReaction', {
@@ -113,7 +98,7 @@ const Messages = ({ selectedUser }) => {
           });
         }
 
-        toast.success('Reaction added successfully');
+        toast.success('Reaction added');
       }
     } catch (error) {
       console.error('Error adding reaction:', error);
@@ -384,19 +369,15 @@ const Messages = ({ selectedUser }) => {
                             <Smile className="h-4 w-4" />
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-52 p-2">
-                          <div className="grid grid-cols-5 gap-1">
-                            {['❤️', '😊', '👍', '😂', '😍', '🎉', '👏', '🙌', '💯', '🔥'].map((emoji) => (
-                              <Button
-                                key={emoji}
-                                variant="ghost"
-                                className="h-8 w-8 p-0 hover:bg-gray-100"
-                                onClick={() => handleReaction(message._id, emoji)}
-                              >
-                                {emoji}
-                              </Button>
-                            ))}
-                          </div>
+                        <PopoverContent className="w-80 p-0">
+                          <EmojiPicker
+                            onEmojiClick={(emojiData) => handleReaction(message._id, emojiData.emoji)}
+                            width={320}
+                            height={400}
+                            previewConfig={{ showPreview: false }}
+                            searchPlaceholder="Search emoji..."
+                            lazyLoadEmojis={true}
+                          />
                         </PopoverContent>
                       </Popover>
 
