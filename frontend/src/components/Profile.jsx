@@ -11,14 +11,18 @@ import { AtSign, Heart, MessageCircle } from 'lucide-react';
 const Profile = () => {
   const params = useParams();
   const userId = params.id;
-  useGetUserProfile(userId);
+  const { isLoading } = useGetUserProfile(userId);
   const [activeTab, setActiveTab] = useState('posts');
   const { followUser } = useFollowUser();
 
   const { userProfile, user } = useSelector(store => store.auth);
 
-  const isLoggedInUserProfile = user?._id === userProfile?._id;
-  const isFollowing = userProfile?.followers?.includes(user?._id);
+  if (!user || !userProfile) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
+
+  const isLoggedInUserProfile = user._id === userProfile._id;
+  const isFollowing = userProfile.followers?.includes(user._id);
 
   const handleFollow = async () => {
     try {
