@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import useGetUserProfile from '@/hooks/useGetUserProfile';
 import useFollowUser from '@/hooks/useFollowUser';
@@ -11,13 +11,13 @@ import { AtSign, Heart, MessageCircle } from 'lucide-react';
 const Profile = () => {
   const params = useParams();
   const userId = params.id;
-  const { isLoading } = useGetUserProfile(userId);
+  const { isLoading } = useGetUserProfile(userId) || { isLoading: true };
   const [activeTab, setActiveTab] = useState('posts');
   const { followUser } = useFollowUser();
-
+  
   const { userProfile, user } = useSelector(store => store.auth);
 
-  if (!user || !userProfile) {
+  if (isLoading || !user || !userProfile) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;
   }
 
@@ -121,7 +121,7 @@ const Profile = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;
