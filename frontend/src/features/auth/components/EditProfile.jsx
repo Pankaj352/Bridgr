@@ -16,8 +16,8 @@ const EditProfile = () => {
     const [loading, setLoading] = useState(false);
     const [input, setInput] = useState({
         profilePhoto: user?.profilePicture,
-        bio: user?.bio,
-        gender: user?.gender
+        bio: user?.bio || '',
+        gender: user?.gender || 'male'
     });
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -33,9 +33,13 @@ const EditProfile = () => {
 
 
     const editProfileHandler = async () => {
-        console.log(input);
+        if (!input.gender || !['male', 'female'].includes(input.gender)) {
+            toast.error('Please select a valid gender');
+            return;
+        }
+
         const formData = new FormData();
-        formData.append("bio", input.bio);
+        formData.append("bio", input.bio || '');
         formData.append("gender", input.gender);
         if(input.profilePhoto){
             formData.append("profilePhoto", input.profilePhoto);
@@ -55,9 +59,9 @@ const EditProfile = () => {
             if(res.data.success){
                 const updatedUserData = {
                     ...user,
-                    bio:res.data.user?.bio,
-                    profilePicture:res.data.user?.profilePicture,
-                    gender:res.data.user.gender
+                    bio: res.data.user?.bio || '',
+                    profilePicture: res.data.user?.profilePicture || '',
+                    gender: res.data.user?.gender
                 };
                 dispatch(setAuthUser(updatedUserData));
                 navigate(`/profile/${user?._id}`);
@@ -65,8 +69,8 @@ const EditProfile = () => {
             }
 
         } catch (error) {
-            console.log(error);
-            toast.error(error.response.data.messasge);
+            console.error('Error updating profile:', error);
+            toast.error(error.response?.data?.message || 'Failed to update profile');
         } finally{
             setLoading(false);
         }
