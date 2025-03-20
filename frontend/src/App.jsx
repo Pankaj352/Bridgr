@@ -9,6 +9,7 @@ import Notifications from './features/notifications/components/Notifications'
 import Profile from './components/Profile'
 import Signup from './features/auth/components/Signup'
 import Search from './features/search/components/Search'
+import AdminDashboard from './features/admin/components/AdminDashboard'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { io } from "socket.io-client";
 import { useDispatch, useSelector } from 'react-redux'
@@ -47,6 +48,10 @@ const browserRouter = createBrowserRouter([
       {
         path: '/search',
         element: <ProtectedRoutes><Search /></ProtectedRoutes>
+      },
+      {
+        path: '/admin',
+        element: <ProtectedRoutes><AdminDashboard /></ProtectedRoutes>
       },
       {
         path: '/explore',
