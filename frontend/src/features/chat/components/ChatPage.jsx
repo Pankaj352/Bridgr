@@ -87,11 +87,7 @@ const ChatPage = () => {
             senderId: selectedUser._id
           });
         }
-<<<<<<< HEAD
       }
-=======
-      }``
->>>>>>> b6a14c5 (commit changes)
     } catch (error) {
       toast.error('Failed to send file');
       console.error(error);
@@ -104,11 +100,7 @@ const ChatPage = () => {
     try {
       const res = await axios.post(
         `https://bridgr.onrender.com/api/message/send/${receiverId}`,
-<<<<<<< HEAD
-        { textMessage: textMessage },
-=======
         { textMessage },
->>>>>>> b6a14c5 (commit changes)
         {
           headers: {
             "Content-Type": "application/json",
@@ -149,15 +141,11 @@ const ChatPage = () => {
       // Check for browser MIME type support
       const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
         ? 'audio/webm;codecs=opus'
-<<<<<<< HEAD
-        : 'audio/webm';
-=======
         : MediaRecorder.isTypeSupported('audio/webm')
         ? 'audio/webm'
         : MediaRecorder.isTypeSupported('audio/mp4')
         ? 'audio/mp4'
         : 'audio/wav';
->>>>>>> b6a14c5 (commit changes)
 
       const recorder = new MediaRecorder(stream, { mimeType });
       setMediaRecorder(recorder);
@@ -178,17 +166,12 @@ const ChatPage = () => {
             return;
           }
 
-<<<<<<< HEAD
-          // Create a file from the blob with proper extension
-          const audioFile = new File([audioBlob], 'audio-message.webm', { 
-=======
           // Create a file from the blob with proper extension based on MIME type
           const fileExtension = mimeType.includes('webm') ? 'webm'
             : mimeType.includes('mp4') ? 'mp4'
             : 'wav';
 
           const audioFile = new File([audioBlob], `audio-message.${fileExtension}`, { 
->>>>>>> b6a14c5 (commit changes)
             type: mimeType,
             lastModified: Date.now()
           });
