@@ -100,6 +100,28 @@ const CallHandler = ({ isOpen, setIsOpen, selectedUser, user, callType }) => {
         }
       };
 
+      pc.onconnectionstatechange = () => {
+        switch(pc.connectionState) {
+          case 'connected':
+            setCallStatus('connected');
+            break;
+          case 'disconnected':
+          case 'failed':
+            toast.error('Call connection lost');
+            cleanup();
+            break;
+          case 'closed':
+            cleanup();
+            break;
+        }
+      };
+
+      pc.onicegatheringstatechange = () => {
+        if (pc.iceGatheringState === 'complete') {
+          setCallStatus('connecting');
+        }
+      };
+
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
       const socket = getSocket();

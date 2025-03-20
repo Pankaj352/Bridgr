@@ -82,9 +82,10 @@ const ChatPage = () => {
 
         const currentSocket = getSocket();
         if (currentSocket) {
-          currentSocket.emit('messageDelivered', {
-            messageId: newMessage._id,
-            senderId: selectedUser._id
+          currentSocket.emit('sendNotification', {
+            receiverId: selectedUser._id,
+            type: 'message',
+            messageId: newMessage._id
           });
         }
       }
@@ -115,9 +116,10 @@ const ChatPage = () => {
 
         const currentSocket = getSocket();
         if (currentSocket) {
-          currentSocket.emit('messageDelivered', {
-            messageId: newMessage._id,
-            senderId: selectedUser._id
+          currentSocket.emit('sendNotification', {
+            receiverId: selectedUser._id,
+            type: 'message',
+            messageId: newMessage._id
           });
         }
       }

@@ -138,7 +138,7 @@ const Messages = ({ selectedUser }) => {
   const handleUnsend = async (messageId) => {
     try {
       await axios.delete(
-        API_ENDPOINTS.DELETE_MESSAGE(messageId),
+        `https://bridgr.onrender.com/api/message/delete/${messageId}`,
         { withCredentials: true }
       );
       toast.success("Message unsent");

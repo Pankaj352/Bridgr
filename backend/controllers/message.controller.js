@@ -104,12 +104,6 @@ export const reactToMessage = async (req, res) => {
         const userId = req.id;
         const { reactionType } = req.body;
 
-<<<<<<< HEAD
-        if (!reactionType || !['like', 'love', 'haha', 'wow', 'sad', 'angry'].includes(reactionType)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid reaction type'
-=======
         if (!messageId) {
             return res.status(400).json({
                 success: false,
@@ -117,11 +111,10 @@ export const reactToMessage = async (req, res) => {
             });
         }
 
-        if (!reactionType) {
+        if (!reactionType || !['like', 'love', 'haha', 'wow', 'sad', 'angry'].includes(reactionType)) {
             return res.status(400).json({
                 success: false,
-                message: 'Reaction type is required'
->>>>>>> b6a14c5 (commit changes)
+                message: 'Invalid reaction type'
             });
         }
 
@@ -179,8 +172,6 @@ export const reactToMessage = async (req, res) => {
     }
 };
 
-<<<<<<< HEAD
-=======
 export const deleteMessage = async (req, res) => {
     try {
         const messageId = req.params.id;
