@@ -228,7 +228,6 @@ export const deleteMessage = async (req, res) => {
     }
 };
 
->>>>>>> b6a14c5 (commit changes)
 export const forwardMessage = async (req, res) => {
     try {
         const messageId = req.params.id;
