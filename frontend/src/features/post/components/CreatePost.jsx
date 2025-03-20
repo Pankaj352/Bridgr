@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -66,7 +66,7 @@ const CreatePost = ({ open, setOpen }) => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[425px] md:max-w-[500px] lg:max-w-[600px] p-0 overflow-hidden bg-white rounded-xl shadow-xl transform transition-all duration-200 ease-in-out max-h-[90vh] overflow-y-auto">
         <DialogHeader className="relative text-center font-semibold text-base sm:text-lg p-4 border-b bg-white sticky top-0 z-10 backdrop-blur-sm bg-white/90">
-          Create New Post
+          <DialogTitle>Create New Post</DialogTitle>
           <Button
             variant="ghost"
             size="icon"
