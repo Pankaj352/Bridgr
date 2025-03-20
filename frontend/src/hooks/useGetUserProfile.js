@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setUserProfile } from '@/redux/authSlice';
 import { toast } from 'sonner';
+import axios from 'axios';
+import { API_ENDPOINTS } from '@/config/api';
 
 const useGetUserProfile = (userId) => {
     const [isLoading, setIsLoading] = useState(true);
@@ -11,11 +13,12 @@ const useGetUserProfile = (userId) => {
         const fetchUserProfile = async () => {
             try {
                 setIsLoading(true);
-                const response = await fetch(`/api/users/${userId}`);
-                const data = await response.json();
-
-                if (data.success) {
-                    dispatch(setUserProfile(data.user));
+                const response = await axios.get(
+                    API_ENDPOINTS.GET_USER_PROFILE(userId),
+                    { withCredentials: true }
+                );
+                if (response.data.success) {
+                    dispatch(setUserProfile(response.data.user));
                 } else {
                     toast.error(data.message || 'Failed to fetch user profile');
                 }

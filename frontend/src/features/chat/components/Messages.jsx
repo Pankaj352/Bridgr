@@ -47,6 +47,16 @@ const Messages = ({ selectedUser }) => {
     const currentSocket = getSocket();
     if (!currentSocket) return;
 
+    currentSocket.on("error", (error) => {
+      console.error('Socket error:', error);
+      toast.error('Connection error. Please try again.');
+    });
+
+    currentSocket.on("connect_error", (error) => {
+      console.error('Socket connection error:', error);
+      toast.error('Failed to connect to chat server.');
+    });
+
     currentSocket.on("userTyping", ({ senderId }) => {
       if (senderId === selectedUser?._id) {
         setIsTyping(true);
@@ -68,6 +78,8 @@ const Messages = ({ selectedUser }) => {
       if (currentSocket) {
         currentSocket.off("userTyping");
         currentSocket.off("userStoppedTyping");
+        currentSocket.off("error");
+        currentSocket.off("connect_error");
       }
     };
   }, [selectedUser]);
